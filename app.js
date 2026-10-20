@@ -1,5 +1,5 @@
 // =============================================================================
-// Progressive Gold 1 (PGOLD1) · Proganize-Style Soft Neo-Brutalist Dashboard
+// Progressive Gold 1 (PGOLD1) · Minimalist Soft-Brutalist Dashboard Engine
 // =============================================================================
 
 const CONFIG = {
@@ -37,33 +37,33 @@ let isSubmitting = false;
 
 // DOM References
 const dom = {
+  networkPill: document.getElementById('networkPill'),
+  networkText: document.getElementById('networkText'),
   walletPill: document.getElementById('walletPill'),
   walletAvatar: document.getElementById('walletAvatar'),
   walletPillText: document.getElementById('walletPillText'),
-  networkStatusBadge: document.getElementById('networkStatusBadge'),
-  networkBadgeText: document.getElementById('networkBadgeText'),
-  cardPgoldBalance: document.getElementById('cardPgoldBalance'),
-  cardEthBalance: document.getElementById('cardEthBalance'),
-  ringUserPct: document.getElementById('ringUserPct'),
+  metricTokenBalance: document.getElementById('metricTokenBalance'),
+  metricRawUnits: document.getElementById('metricRawUnits'),
+  metricEthBalance: document.getElementById('metricEthBalance'),
   refreshBalancesBtn: document.getElementById('refreshBalancesBtn'),
-  sidebarSendBtn: document.getElementById('sidebarSendBtn'),
+  sidebarTransferBtn: document.getElementById('sidebarTransferBtn'),
   transferForm: document.getElementById('transferForm'),
   recipientInput: document.getElementById('recipientInput'),
   amountInput: document.getElementById('amountInput'),
-  shortcutProfBtn: document.getElementById('shortcutProfBtn'),
-  shortcutOneBtn: document.getElementById('shortcutOneBtn'),
-  shortcutMaxBtn: document.getElementById('shortcutMaxBtn'),
-  transferFeedback: document.getElementById('transferFeedback'),
+  fillProfBtn: document.getElementById('fillProfBtn'),
+  fillOneBtn: document.getElementById('fillOneBtn'),
+  fillMaxBtn: document.getElementById('fillMaxBtn'),
+  transferBanner: document.getElementById('transferBanner'),
   submitTransferBtn: document.getElementById('submitTransferBtn'),
   submitBtnText: document.getElementById('submitBtnText'),
-  activityStack: document.getElementById('activityStack'),
+  activityList: document.getElementById('activityList'),
   toast: document.getElementById('toast'),
   toastIcon: document.getElementById('toastIcon'),
   toastMsg: document.getElementById('toastMsg')
 };
 
 // =============================================================================
-// TOAST NOTIFICATIONS
+// TOAST
 // =============================================================================
 let toastTimer = null;
 function showToast(msg, icon = 'ℹ️') {
@@ -73,11 +73,11 @@ function showToast(msg, icon = 'ℹ️') {
   dom.toast.classList.add('show');
   toastTimer = setTimeout(() => {
     dom.toast.classList.remove('show');
-  }, 4500);
+  }, 4000);
 }
 
 // =============================================================================
-// WEB3 & WALLET MANAGEMENT
+// WEB3 INITIALIZATION & WALLET
 // =============================================================================
 async function initWeb3() {
   if (!window.ethereum) {
@@ -174,13 +174,13 @@ function updateUI() {
 
   // Network badge
   if (isSepolia) {
-    dom.networkStatusBadge.className = 'network-badge';
-    dom.networkBadgeText.textContent = 'Sepolia (11155111)';
-    dom.networkStatusBadge.onclick = null;
+    dom.networkPill.className = 'badge-pill green';
+    dom.networkText.textContent = 'Sepolia (11155111)';
+    dom.networkPill.onclick = null;
   } else {
-    dom.networkStatusBadge.className = 'network-badge warning';
-    dom.networkBadgeText.textContent = 'Switch to Sepolia';
-    dom.networkStatusBadge.onclick = switchToSepolia;
+    dom.networkPill.className = 'badge-pill warning';
+    dom.networkText.textContent = 'Switch to Sepolia';
+    dom.networkPill.onclick = switchToSepolia;
   }
 
   // Wallet pill
@@ -190,7 +190,7 @@ function updateUI() {
     dom.walletAvatar.textContent = currentAccount.substring(2, 4).toUpperCase();
     dom.walletPill.onclick = () => {
       navigator.clipboard.writeText(currentAccount);
-      showToast('Wallet address copied to clipboard!', '📋');
+      showToast('Wallet address copied!', '📋');
     };
   } else {
     dom.walletPillText.textContent = 'Connect Wallet';
@@ -200,7 +200,7 @@ function updateUI() {
 }
 
 // =============================================================================
-// LOAD BALANCES
+// BALANCES
 // =============================================================================
 async function loadBalances() {
   if (!window.ethereum || !currentAccount) return;
@@ -212,7 +212,7 @@ async function loadBalances() {
     // Fetch SepoliaETH
     const ethRaw = await provider.getBalance(currentAccount);
     formattedEthBalance = parseFloat(ethers.formatEther(ethRaw)).toFixed(3);
-    dom.cardEthBalance.textContent = `${formattedEthBalance}`;
+    dom.metricEthBalance.textContent = formattedEthBalance;
 
     // Fetch PGOLD1
     const tokenContract = new ethers.Contract(CONFIG.tokenAddress, ERC20_ABI, provider);
@@ -224,13 +224,8 @@ async function loadBalances() {
       maximumFractionDigits: 2
     });
 
-    dom.cardPgoldBalance.textContent = prettyTokens;
-
-    // Calculate percentage share
-    if (CONFIG.tokenTotalSupply > 0n) {
-      const pct = (Number(rawTokenBalance * 1000n / CONFIG.tokenTotalSupply) / 10).toFixed(1);
-      dom.ringUserPct.textContent = `${pct}%`;
-    }
+    dom.metricTokenBalance.textContent = prettyTokens;
+    dom.metricRawUnits.textContent = `${rawTokenBalance.toString()} base units`;
 
   } catch (err) {
     console.error('Error loading balances:', err);
@@ -246,15 +241,15 @@ async function loadBalances() {
 // =============================================================================
 async function handleTransfer(e) {
   e.preventDefault();
-  clearFeedback();
+  clearBanner();
 
   if (!currentAccount) {
-    setFeedback('Please connect your MetaMask wallet first.', 'error');
+    setBanner('Please connect your MetaMask wallet first.', 'error');
     return;
   }
 
   if (currentChainId !== CONFIG.chainId) {
-    setFeedback('Please switch MetaMask to Ethereum Sepolia.', 'error');
+    setBanner('Please switch MetaMask to Ethereum Sepolia.', 'error');
     return;
   }
 
@@ -263,7 +258,7 @@ async function handleTransfer(e) {
 
   // Validate address
   if (!recipient || !ethers.isAddress(recipient)) {
-    setFeedback('Invalid recipient Ethereum address format.', 'error');
+    setBanner('Invalid recipient address format.', 'error');
     dom.recipientInput.classList.add('error');
     return;
   } else {
@@ -272,7 +267,7 @@ async function handleTransfer(e) {
 
   // Validate amount
   if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) {
-    setFeedback('Please enter a valid amount greater than 0.', 'error');
+    setBanner('Please enter an amount greater than 0.', 'error');
     dom.amountInput.classList.add('error');
     return;
   } else {
@@ -283,16 +278,15 @@ async function handleTransfer(e) {
   try {
     parsedAmount = ethers.parseUnits(amountStr, CONFIG.tokenDecimals);
   } catch (err) {
-    setFeedback('Invalid precision for 18-decimal token.', 'error');
+    setBanner('Invalid precision for 18-decimal token.', 'error');
     return;
   }
 
   if (parsedAmount > rawTokenBalance) {
-    setFeedback(`Insufficient balance. You have ${formattedTokenBalance} PGOLD1.`, 'error');
+    setBanner(`Insufficient balance. You hold ${formattedTokenBalance} PGOLD1.`, 'error');
     return;
   }
 
-  // Execute transfer
   setSubmitting(true);
   showToast('Confirm transfer in MetaMask...', '🦊');
 
@@ -303,17 +297,16 @@ async function handleTransfer(e) {
 
     const tx = await tokenContract.transfer(recipient, parsedAmount);
 
-    setFeedback(`Transaction broadcast! Waiting for block confirmation...`, 'success');
+    setBanner(`Transaction broadcast! Waiting for confirmation on Sepolia...`, 'success');
     showToast('Transaction submitted to Sepolia!', '⏳');
 
     const receipt = await tx.wait();
 
     if (receipt.status === 1) {
-      setFeedback(`Transfer of ${amountStr} PGOLD1 confirmed on Sepolia!`, 'success');
+      setBanner(`Transfer of ${amountStr} PGOLD1 confirmed on-chain!`, 'success');
       showToast('Transfer completed successfully!', '🎉');
 
-      // Add to recent activities
-      addActivity({
+      addActivityRow({
         recipient,
         amount: amountStr,
         txHash: tx.hash,
@@ -331,21 +324,21 @@ async function handleTransfer(e) {
     if (err.code === 'ACTION_REJECTED' || (err.info && err.info.error && err.info.error.code === 4001)) {
       msg = 'Transaction rejected in MetaMask.';
     }
-    setFeedback(msg, 'error');
+    setBanner(msg, 'error');
     showToast(msg, '❌');
   } finally {
     setSubmitting(false);
   }
 }
 
-function setFeedback(msg, type) {
-  dom.transferFeedback.textContent = msg;
-  dom.transferFeedback.className = `feedback-banner ${type}`;
+function setBanner(msg, type) {
+  dom.transferBanner.textContent = msg;
+  dom.transferBanner.className = `banner-msg ${type}`;
 }
 
-function clearFeedback() {
-  dom.transferFeedback.textContent = '';
-  dom.transferFeedback.className = 'feedback-banner';
+function clearBanner() {
+  dom.transferBanner.textContent = '';
+  dom.transferBanner.className = 'banner-msg';
   dom.recipientInput.classList.remove('error');
   dom.amountInput.classList.remove('error');
 }
@@ -356,43 +349,40 @@ function setSubmitting(loading) {
   dom.submitBtnText.textContent = loading ? 'Confirming on Sepolia...' : 'Confirm & Send Transfer';
 }
 
-function addActivity({ recipient, amount, txHash, isLecturer }) {
+function addActivityRow({ recipient, amount, txHash, isLecturer }) {
   const truncated = `${recipient.substring(0, 8)}...${recipient.substring(recipient.length - 6)}`;
-  const item = document.createElement('div');
-  item.className = 'activity-pill-card blue';
-  item.innerHTML = `
-    <div class="activity-avatar" style="background: #93c5fd;">💸</div>
-    <div class="activity-text">
-      <strong>${isLecturer ? 'Lecturer Transfer' : 'Token Transfer'}:</strong> Sent ${amount} PGOLD1
-      <div style="font-size: 11px; opacity: 0.8;">To: ${truncated} · <a href="${CONFIG.explorerUrl}/tx/${txHash}" target="_blank" style="color: inherit; text-decoration: underline;">Tx receipt</a></div>
+  const row = document.createElement('div');
+  row.className = 'activity-row new';
+  row.innerHTML = `
+    <span class="activity-badge">💸</span>
+    <div class="activity-body">
+      <strong>${isLecturer ? 'Lecturer Transfer' : 'Transfer'}:</strong> Sent ${amount} PGOLD1
+      <div style="font-size: 11px; color: #475569;">To: ${truncated} · <a href="${CONFIG.explorerUrl}/tx/${txHash}" target="_blank" class="activity-link">Receipt ↗</a></div>
     </div>
-    <div class="activity-time">Just now</div>
   `;
-  dom.activityStack.prepend(item);
+  dom.activityList.prepend(row);
 }
 
-// =============================================================================
-// SHORTCUTS & EVENT LISTENERS
-// =============================================================================
-dom.shortcutProfBtn.onclick = () => {
+// Shortcuts
+dom.fillProfBtn.onclick = () => {
   dom.recipientInput.value = CONFIG.lecturerAddress;
-  clearFeedback();
-  showToast('Lecturer address populated', '🎓');
+  clearBanner();
+  showToast('Lecturer address filled', '🎓');
 };
 
-dom.shortcutOneBtn.onclick = () => {
+dom.fillOneBtn.onclick = () => {
   dom.amountInput.value = '1.0';
-  clearFeedback();
+  clearBanner();
 };
 
-dom.shortcutMaxBtn.onclick = () => {
+dom.fillMaxBtn.onclick = () => {
   if (formattedTokenBalance && parseFloat(formattedTokenBalance) > 0) {
     dom.amountInput.value = formattedTokenBalance;
-    clearFeedback();
+    clearBanner();
   }
 };
 
-dom.sidebarSendBtn.onclick = () => {
+dom.sidebarTransferBtn.onclick = () => {
   dom.recipientInput.focus();
   dom.recipientInput.scrollIntoView({ behavior: 'smooth' });
 };
