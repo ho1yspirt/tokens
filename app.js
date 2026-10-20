@@ -1,5 +1,5 @@
 // =============================================================================
-// Progressive Gold 1 (PGOLD1) · Material 3 Expressive Dashboard Engine
+// Progressive Gold 1 (PGOLD1) · Proganize-Style Soft Neo-Brutalist Dashboard
 // =============================================================================
 
 const CONFIG = {
@@ -10,7 +10,7 @@ const CONFIG = {
   tokenName: 'Progressive Gold 1',
   tokenSymbol: 'PGOLD1',
   tokenDecimals: 18,
-  tokenTotalSupply: '100,000 PGOLD1',
+  tokenTotalSupply: 100000n * (10n ** 18n),
   lecturerAddress: '0x5f3046bD5aA3c6d4575AF09B8198d584f130708E',
   lecturerTxHash: '0xa399c984fcc3ddae149f7191cbf3034ddfca4b76c8709cf2fbe9974ba5707f3c',
   rpcUrl: 'https://rpc.sepolia.org',
@@ -27,7 +27,7 @@ const ERC20_ABI = [
   "event Transfer(address indexed from, address indexed to, uint256 value)"
 ];
 
-// Application State
+// App State
 let currentAccount = null;
 let currentChainId = null;
 let rawTokenBalance = 0n;
@@ -35,84 +35,62 @@ let formattedTokenBalance = '0';
 let formattedEthBalance = '0';
 let isSubmitting = false;
 
-// DOM Element References
+// DOM References
 const dom = {
-  networkPill: document.getElementById('networkPill'),
-  networkText: document.getElementById('networkText'),
-  connectWalletBtn: document.getElementById('connectWalletBtn'),
-  connectBtnText: document.getElementById('connectBtnText'),
-  wrongNetworkBanner: document.getElementById('wrongNetworkBanner'),
-  switchNetworkBtn: document.getElementById('switchNetworkBtn'),
-  unconnectedPrompt: document.getElementById('unconnectedPrompt'),
-  promptConnectBtn: document.getElementById('promptConnectBtn'),
-  balancesContainer: document.getElementById('balancesContainer'),
-  userPgoldBalance: document.getElementById('userPgoldBalance'),
-  userRawUnits: document.getElementById('userRawUnits'),
-  userEthBalance: document.getElementById('userEthBalance'),
-  availableBalanceNote: document.getElementById('availableBalanceNote'),
+  walletPill: document.getElementById('walletPill'),
+  walletAvatar: document.getElementById('walletAvatar'),
+  walletPillText: document.getElementById('walletPillText'),
+  networkStatusBadge: document.getElementById('networkStatusBadge'),
+  networkBadgeText: document.getElementById('networkBadgeText'),
+  cardPgoldBalance: document.getElementById('cardPgoldBalance'),
+  cardEthBalance: document.getElementById('cardEthBalance'),
+  ringUserPct: document.getElementById('ringUserPct'),
   refreshBalancesBtn: document.getElementById('refreshBalancesBtn'),
-  copyContractBtn: document.getElementById('copyContractBtn'),
-  copyLecturerAddressBtn: document.getElementById('copyLecturerAddressBtn'),
+  sidebarSendBtn: document.getElementById('sidebarSendBtn'),
   transferForm: document.getElementById('transferForm'),
   recipientInput: document.getElementById('recipientInput'),
   amountInput: document.getElementById('amountInput'),
-  recipientValidationMsg: document.getElementById('recipientValidationMsg'),
-  fillProfessorBtn: document.getElementById('fillProfessorBtn'),
-  maxAmountBtn: document.getElementById('maxAmountBtn'),
-  fillOneTokenBtn: document.getElementById('fillOneTokenBtn'),
-  transferErrorBanner: document.getElementById('transferErrorBanner'),
+  shortcutProfBtn: document.getElementById('shortcutProfBtn'),
+  shortcutOneBtn: document.getElementById('shortcutOneBtn'),
+  shortcutMaxBtn: document.getElementById('shortcutMaxBtn'),
+  transferFeedback: document.getElementById('transferFeedback'),
   submitTransferBtn: document.getElementById('submitTransferBtn'),
-  btnIcon: document.getElementById('btnIcon'),
-  btnText: document.getElementById('btnText'),
-  txList: document.getElementById('txList'),
+  submitBtnText: document.getElementById('submitBtnText'),
+  activityStack: document.getElementById('activityStack'),
   toast: document.getElementById('toast'),
   toastIcon: document.getElementById('toastIcon'),
   toastMsg: document.getElementById('toastMsg')
 };
 
 // =============================================================================
-// NOTIFICATION TOAST
+// TOAST NOTIFICATIONS
 // =============================================================================
-let toastTimeout = null;
-function showToast(message, icon = 'info', linkUrl = null, linkText = 'View') {
-  clearTimeout(toastTimeout);
+let toastTimer = null;
+function showToast(msg, icon = 'ℹ️') {
+  clearTimeout(toastTimer);
   dom.toastIcon.textContent = icon;
-  
-  if (linkUrl) {
-    dom.toastMsg.innerHTML = `${message} <a href="${linkUrl}" target="_blank">${linkText} ↗</a>`;
-  } else {
-    dom.toastMsg.textContent = message;
-  }
-
+  dom.toastMsg.textContent = msg;
   dom.toast.classList.add('show');
-  toastTimeout = setTimeout(() => {
+  toastTimer = setTimeout(() => {
     dom.toast.classList.remove('show');
-  }, 5000);
-}
-
-// Copy to Clipboard helper
-function copyText(text, label) {
-  navigator.clipboard.writeText(text);
-  showToast(`${label} copied to clipboard!`, 'check_circle');
+  }, 4500);
 }
 
 // =============================================================================
-// METAMASK / WEB3 INITIALIZATION
+// WEB3 & WALLET MANAGEMENT
 // =============================================================================
 async function initWeb3() {
   if (!window.ethereum) {
-    console.warn('MetaMask not detected in browser');
+    dom.walletPillText.textContent = 'Install MetaMask';
     return;
   }
 
   try {
-    // Check existing accounts
     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
     if (accounts.length > 0) {
       currentAccount = accounts[0];
     }
 
-    // Check chain
     const hexId = await window.ethereum.request({ method: 'eth_chainId' });
     currentChainId = BigInt(hexId);
 
@@ -121,16 +99,11 @@ async function initWeb3() {
       await loadBalances();
     }
   } catch (err) {
-    console.error('Failed to initialize web3:', err);
+    console.error('Initialization error:', err);
   }
 
-  // Event Listeners
   window.ethereum.on('accountsChanged', (accounts) => {
-    if (accounts.length > 0) {
-      currentAccount = accounts[0];
-    } else {
-      currentAccount = null;
-    }
+    currentAccount = accounts.length > 0 ? accounts[0] : null;
     updateUI();
     if (currentAccount) loadBalances();
   });
@@ -142,10 +115,9 @@ async function initWeb3() {
   });
 }
 
-// Connect Wallet Action
 async function connectWallet() {
   if (!window.ethereum) {
-    showToast('MetaMask not detected. Please install MetaMask!', 'error');
+    showToast('MetaMask not detected. Please install extension!', '⚠️');
     window.open('https://metamask.io/download/', '_blank');
     return;
   }
@@ -158,16 +130,15 @@ async function connectWallet() {
     const hexId = await window.ethereum.request({ method: 'eth_chainId' });
     currentChainId = BigInt(hexId);
 
-    showToast('MetaMask connected successfully!', 'check_circle');
+    showToast('MetaMask connected!', '✅');
     updateUI();
     await loadBalances();
   } catch (err) {
     console.error(err);
-    showToast(err.message || 'Failed to connect MetaMask', 'error');
+    showToast(err.message || 'Connection failed', '❌');
   }
 }
 
-// Switch Chain Action
 async function switchToSepolia() {
   if (!window.ethereum) return;
   try {
@@ -176,7 +147,6 @@ async function switchToSepolia() {
       params: [{ chainId: CONFIG.hexChainId }]
     });
   } catch (switchError) {
-    // 4902: Chain has not been added to MetaMask
     if (switchError.code === 4902) {
       try {
         await window.ethereum.request({
@@ -190,66 +160,59 @@ async function switchToSepolia() {
           }]
         });
       } catch (addError) {
-        console.error('Failed to add Sepolia chain:', addError);
+        console.error(addError);
       }
     }
   }
 }
 
 // =============================================================================
-// UI STATE UPDATES
+// UI SYNC
 // =============================================================================
 function updateUI() {
   const isSepolia = currentChainId === CONFIG.chainId;
 
-  // Network pill
-  if (currentAccount) {
-    dom.networkPill.style.display = 'inline-flex';
-    if (isSepolia) {
-      dom.networkPill.className = 'badge-pill success';
-      dom.networkText.textContent = 'Sepolia (11155111)';
-      dom.wrongNetworkBanner.style.display = 'none';
-    } else {
-      dom.networkPill.className = 'badge-pill warning';
-      dom.networkText.textContent = 'Wrong Network';
-      dom.wrongNetworkBanner.style.display = 'block';
-    }
+  // Network badge
+  if (isSepolia) {
+    dom.networkStatusBadge.className = 'network-badge';
+    dom.networkBadgeText.textContent = 'Sepolia (11155111)';
+    dom.networkStatusBadge.onclick = null;
   } else {
-    dom.networkPill.style.display = 'none';
-    dom.wrongNetworkBanner.style.display = 'none';
+    dom.networkStatusBadge.className = 'network-badge warning';
+    dom.networkBadgeText.textContent = 'Switch to Sepolia';
+    dom.networkStatusBadge.onclick = switchToSepolia;
   }
 
-  // Connect button / account badge
+  // Wallet pill
   if (currentAccount) {
     const truncated = `${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
-    dom.connectBtnText.textContent = truncated;
-    dom.connectWalletBtn.onclick = () => copyText(currentAccount, 'Wallet address');
-    dom.unconnectedPrompt.style.display = 'none';
-    dom.balancesContainer.style.display = 'block';
+    dom.walletPillText.textContent = truncated;
+    dom.walletAvatar.textContent = currentAccount.substring(2, 4).toUpperCase();
+    dom.walletPill.onclick = () => {
+      navigator.clipboard.writeText(currentAccount);
+      showToast('Wallet address copied to clipboard!', '📋');
+    };
   } else {
-    dom.connectBtnText.textContent = 'Connect MetaMask';
-    dom.connectWalletBtn.onclick = connectWallet;
-    dom.unconnectedPrompt.style.display = 'block';
-    dom.balancesContainer.style.display = 'none';
+    dom.walletPillText.textContent = 'Connect Wallet';
+    dom.walletAvatar.textContent = 'P';
+    dom.walletPill.onclick = connectWallet;
   }
 }
 
 // =============================================================================
-// LOAD ON-CHAIN BALANCES
+// LOAD BALANCES
 // =============================================================================
 async function loadBalances() {
   if (!window.ethereum || !currentAccount) return;
 
   dom.refreshBalancesBtn.style.transform = 'rotate(180deg)';
-  dom.refreshBalancesBtn.style.transition = 'transform 0.4s ease';
-
   try {
     const provider = new ethers.BrowserProvider(window.ethereum);
 
     // Fetch SepoliaETH
     const ethRaw = await provider.getBalance(currentAccount);
-    formattedEthBalance = parseFloat(ethers.formatEther(ethRaw)).toFixed(4);
-    dom.userEthBalance.textContent = `${formattedEthBalance} ETH`;
+    formattedEthBalance = parseFloat(ethers.formatEther(ethRaw)).toFixed(3);
+    dom.cardEthBalance.textContent = `${formattedEthBalance}`;
 
     // Fetch PGOLD1
     const tokenContract = new ethers.Contract(CONFIG.tokenAddress, ERC20_ABI, provider);
@@ -258,36 +221,40 @@ async function loadBalances() {
 
     const prettyTokens = parseFloat(formattedTokenBalance).toLocaleString(undefined, {
       minimumFractionDigits: 0,
-      maximumFractionDigits: 4
+      maximumFractionDigits: 2
     });
 
-    dom.userPgoldBalance.textContent = prettyTokens;
-    dom.userRawUnits.textContent = `${rawTokenBalance.toString()} base units`;
-    dom.availableBalanceNote.textContent = `Available: ${prettyTokens} PGOLD1`;
+    dom.cardPgoldBalance.textContent = prettyTokens;
+
+    // Calculate percentage share
+    if (CONFIG.tokenTotalSupply > 0n) {
+      const pct = (Number(rawTokenBalance * 1000n / CONFIG.tokenTotalSupply) / 10).toFixed(1);
+      dom.ringUserPct.textContent = `${pct}%`;
+    }
 
   } catch (err) {
-    console.error('Error fetching on-chain balances:', err);
+    console.error('Error loading balances:', err);
   } finally {
     setTimeout(() => {
       dom.refreshBalancesBtn.style.transform = 'rotate(0deg)';
-    }, 400);
+    }, 300);
   }
 }
 
 // =============================================================================
-// SAFE TRANSFER SUBMISSION
+// TRANSFER LOGIC
 // =============================================================================
 async function handleTransfer(e) {
   e.preventDefault();
-  hideError();
+  clearFeedback();
 
   if (!currentAccount) {
-    showError('Please connect your MetaMask wallet first.');
+    setFeedback('Please connect your MetaMask wallet first.', 'error');
     return;
   }
 
   if (currentChainId !== CONFIG.chainId) {
-    showError('Please switch MetaMask to Ethereum Sepolia (11155111).');
+    setFeedback('Please switch MetaMask to Ethereum Sepolia.', 'error');
     return;
   }
 
@@ -296,7 +263,7 @@ async function handleTransfer(e) {
 
   // Validate address
   if (!recipient || !ethers.isAddress(recipient)) {
-    showError('Invalid recipient address. Please enter a valid 42-character 0x address.');
+    setFeedback('Invalid recipient Ethereum address format.', 'error');
     dom.recipientInput.classList.add('error');
     return;
   } else {
@@ -305,7 +272,7 @@ async function handleTransfer(e) {
 
   // Validate amount
   if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) {
-    showError('Transfer amount must be greater than 0.');
+    setFeedback('Please enter a valid amount greater than 0.', 'error');
     dom.amountInput.classList.add('error');
     return;
   } else {
@@ -316,18 +283,18 @@ async function handleTransfer(e) {
   try {
     parsedAmount = ethers.parseUnits(amountStr, CONFIG.tokenDecimals);
   } catch (err) {
-    showError('Invalid amount decimal precision.');
+    setFeedback('Invalid precision for 18-decimal token.', 'error');
     return;
   }
 
   if (parsedAmount > rawTokenBalance) {
-    showError(`Insufficient PGOLD1 balance. You have ${formattedTokenBalance} PGOLD1.`);
+    setFeedback(`Insufficient balance. You have ${formattedTokenBalance} PGOLD1.`, 'error');
     return;
   }
 
-  // Initiate Transaction
-  setTransferLoading(true);
-  showToast('Please confirm transaction in your MetaMask wallet...', 'wallet');
+  // Execute transfer
+  setSubmitting(true);
+  showToast('Confirm transfer in MetaMask...', '🦊');
 
   try {
     const provider = new ethers.BrowserProvider(window.ethereum);
@@ -336,125 +303,101 @@ async function handleTransfer(e) {
 
     const tx = await tokenContract.transfer(recipient, parsedAmount);
 
-    showToast('Transaction submitted! Awaiting block confirmation...', 'hourglass_top', `${CONFIG.explorerUrl}/tx/${tx.hash}`);
+    setFeedback(`Transaction broadcast! Waiting for block confirmation...`, 'success');
+    showToast('Transaction submitted to Sepolia!', '⏳');
 
-    // Wait for 1 confirmation
     const receipt = await tx.wait();
 
     if (receipt.status === 1) {
-      showToast(`Successfully transferred ${amountStr} PGOLD1!`, 'check_circle', `${CONFIG.explorerUrl}/tx/${tx.hash}`);
+      setFeedback(`Transfer of ${amountStr} PGOLD1 confirmed on Sepolia!`, 'success');
+      showToast('Transfer completed successfully!', '🎉');
 
-      // Record to recent activity feed
-      addTxToActivity({
-        hash: tx.hash,
-        recipient: recipient,
+      // Add to recent activities
+      addActivity({
+        recipient,
         amount: amountStr,
-        label: recipient.toLowerCase() === CONFIG.lecturerAddress.toLowerCase() ? 'Lecturer Transfer' : 'Token Transfer'
+        txHash: tx.hash,
+        isLecturer: recipient.toLowerCase() === CONFIG.lecturerAddress.toLowerCase()
       });
 
-      // Clear input & refresh balance
       dom.amountInput.value = '';
       await loadBalances();
     } else {
       throw new Error('Transaction reverted on-chain.');
     }
   } catch (err) {
-    console.error('Transfer execution error:', err);
+    console.error('Transfer error:', err);
     let msg = err.reason || err.message || 'Transaction failed';
     if (err.code === 'ACTION_REJECTED' || (err.info && err.info.error && err.info.error.code === 4001)) {
       msg = 'Transaction rejected in MetaMask.';
     }
-    showError(msg);
-    showToast(msg, 'error');
+    setFeedback(msg, 'error');
+    showToast(msg, '❌');
   } finally {
-    setTransferLoading(false);
+    setSubmitting(false);
   }
 }
 
-function showError(msg) {
-  dom.transferErrorBanner.textContent = msg;
-  dom.transferErrorBanner.style.display = 'block';
+function setFeedback(msg, type) {
+  dom.transferFeedback.textContent = msg;
+  dom.transferFeedback.className = `feedback-banner ${type}`;
 }
 
-function hideError() {
-  dom.transferErrorBanner.style.display = 'none';
+function clearFeedback() {
+  dom.transferFeedback.textContent = '';
+  dom.transferFeedback.className = 'feedback-banner';
   dom.recipientInput.classList.remove('error');
   dom.amountInput.classList.remove('error');
 }
 
-function setTransferLoading(loading) {
+function setSubmitting(loading) {
   isSubmitting = loading;
   dom.submitTransferBtn.disabled = loading;
-  if (loading) {
-    dom.btnIcon.textContent = 'hourglass_top';
-    dom.btnText.textContent = 'Confirming on Sepolia...';
-  } else {
-    dom.btnIcon.textContent = 'send';
-    dom.btnText.textContent = 'Send PGOLD1';
-  }
+  dom.submitBtnText.textContent = loading ? 'Confirming on Sepolia...' : 'Confirm & Send Transfer';
 }
 
-function addTxToActivity({ hash, recipient, amount, label }) {
-  const truncatedRecipient = `${recipient.substring(0, 8)}...${recipient.substring(recipient.length - 6)}`;
+function addActivity({ recipient, amount, txHash, isLecturer }) {
+  const truncated = `${recipient.substring(0, 8)}...${recipient.substring(recipient.length - 6)}`;
   const item = document.createElement('div');
-  item.className = 'tx-item';
+  item.className = 'activity-pill-card blue';
   item.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <span class="material-symbols-rounded" style="color: var(--md-sys-color-tertiary); font-size: 24px;">check_circle</span>
-      <div>
-        <div style="font-size: 14px; font-weight: 700;">${label}</div>
-        <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-family: 'Roboto Mono', monospace;">To: ${truncatedRecipient}</div>
-      </div>
+    <div class="activity-avatar" style="background: #93c5fd;">💸</div>
+    <div class="activity-text">
+      <strong>${isLecturer ? 'Lecturer Transfer' : 'Token Transfer'}:</strong> Sent ${amount} PGOLD1
+      <div style="font-size: 11px; opacity: 0.8;">To: ${truncated} · <a href="${CONFIG.explorerUrl}/tx/${txHash}" target="_blank" style="color: inherit; text-decoration: underline;">Tx receipt</a></div>
     </div>
-    <div style="text-align: right;">
-      <div style="font-size: 14px; font-weight: 800; color: var(--md-sys-color-primary);">-${amount} PGOLD1</div>
-      <a href="${CONFIG.explorerUrl}/tx/${hash}" target="_blank" style="font-size: 11px; color: var(--md-sys-color-secondary); text-decoration: none;">
-        Etherscan ↗
-      </a>
-    </div>
+    <div class="activity-time">Just now</div>
   `;
-  dom.txList.prepend(item);
+  dom.activityStack.prepend(item);
 }
 
 // =============================================================================
-// EVENT LISTENERS BINDING
+// SHORTCUTS & EVENT LISTENERS
 // =============================================================================
-dom.promptConnectBtn.onclick = connectWallet;
-dom.switchNetworkBtn.onclick = switchToSepolia;
-dom.refreshBalancesBtn.onclick = loadBalances;
-
-dom.copyContractBtn.onclick = () => copyText(CONFIG.tokenAddress, 'Contract address');
-dom.copyLecturerAddressBtn.onclick = () => copyText(CONFIG.lecturerAddress, 'Professor wallet address');
-
-// Input helpers
-dom.fillProfessorBtn.onclick = () => {
+dom.shortcutProfBtn.onclick = () => {
   dom.recipientInput.value = CONFIG.lecturerAddress;
-  hideError();
-  showToast('Professor Sepolia address populated', 'school');
+  clearFeedback();
+  showToast('Lecturer address populated', '🎓');
 };
 
-dom.maxAmountBtn.onclick = () => {
+dom.shortcutOneBtn.onclick = () => {
+  dom.amountInput.value = '1.0';
+  clearFeedback();
+};
+
+dom.shortcutMaxBtn.onclick = () => {
   if (formattedTokenBalance && parseFloat(formattedTokenBalance) > 0) {
     dom.amountInput.value = formattedTokenBalance;
-    hideError();
+    clearFeedback();
   }
 };
 
-dom.fillOneTokenBtn.onclick = () => {
-  dom.amountInput.value = '1.0';
-  hideError();
+dom.sidebarSendBtn.onclick = () => {
+  dom.recipientInput.focus();
+  dom.recipientInput.scrollIntoView({ behavior: 'smooth' });
 };
 
-dom.recipientInput.oninput = () => {
-  const val = dom.recipientInput.value.trim();
-  if (val && !ethers.isAddress(val)) {
-    dom.recipientValidationMsg.textContent = 'Invalid address format';
-  } else {
-    dom.recipientValidationMsg.textContent = '';
-  }
-};
-
+dom.refreshBalancesBtn.onclick = loadBalances;
 dom.transferForm.onsubmit = handleTransfer;
 
-// Start Web3
 window.addEventListener('DOMContentLoaded', initWeb3);

@@ -3,74 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Progressive Gold 1 (PGOLD1) | Material 3 Dashboard</title>
+  <title>Progressive Gold 1 (PGOLD1) | Dashboard</title>
 
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪙</text></svg>">
 
-  <!-- Typography: Google Sans / Outfit & Roboto Flex for Material 3 Expressive -->
+  <!-- Typography: Plus Jakarta Sans / Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Ethers.js v6 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
 
-  <!-- Google Material 3 Web Components (ESM) -->
-  <script type="module">
-    import 'https://esm.run/@material/web/all.js';
-  </script>
-
   <style>
     /* ==========================================================================
-       MATERIAL 3 EXPRESSIVE DESIGN TOKENS (GOLD / OBSIDIAN PALETTE)
+       NEO-BRUTALIST / SOFT PLAYFUL SAAS DESIGN SYSTEM (MATCHING REFERENCE UI)
        ========================================================================== */
     :root {
-      /* M3 Expressive Core Brand (Gold) */
-      --md-sys-color-primary: #f5be38;
-      --md-sys-color-on-primary: #3f2e00;
-      --md-sys-color-primary-container: #5b4300;
-      --md-sys-color-on-primary-container: #ffdf99;
+      /* Base Canvas */
+      --bg-canvas: #eaf1ed;
+      --bg-surface: #ffffff;
+      --border-dark: #181c20;
+      --text-main: #181c20;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
 
-      /* Secondary (Expressive Cyan/Teal) */
-      --md-sys-color-secondary: #7bd0ff;
-      --md-sys-color-on-secondary: #003549;
-      --md-sys-color-secondary-container: #004d69;
-      --md-sys-color-on-secondary-container: #c4e7ff;
+      /* Pastel Palette */
+      --pastel-yellow: #fef3d6;
+      --pastel-yellow-border: #f4dc9e;
+      --pastel-yellow-btn: #ffe27a;
 
-      /* Tertiary (Emerald Success) */
-      --md-sys-color-tertiary: #6ee7b7;
-      --md-sys-color-on-tertiary: #003825;
+      --pastel-green: #e6f7ec;
+      --pastel-green-border: #bce7c8;
+      --pastel-green-accent: #34d399;
 
-      /* M3 Expressive Dark Surfaces */
-      --md-sys-color-surface: #0a0e17;
-      --md-sys-color-surface-dim: #060910;
-      --md-sys-color-surface-container-lowest: #0d121c;
-      --md-sys-color-surface-container-low: #121824;
-      --md-sys-color-surface-container: #161f2e;
-      --md-sys-color-surface-container-high: #1d283b;
-      --md-sys-color-surface-container-highest: #25334a;
+      --pastel-pink: #fee8e6;
+      --pastel-pink-border: #f9c7c2;
+      --pastel-pink-accent: #f87171;
 
-      --md-sys-color-on-surface: #f1f5f9;
-      --md-sys-color-on-surface-variant: #94a3b8;
-      --md-sys-color-outline: #475569;
-      --md-sys-color-outline-variant: #1e293b;
-      --md-sys-color-error: #f87171;
-      --md-sys-color-on-error: #450a0a;
+      --pastel-blue: #dce8fc;
+      --pastel-blue-border: #b3cffa;
+      --pastel-blue-accent: #60a5fa;
 
-      /* M3 Expressive Shapes & Radii */
-      --m3-shape-pill: 9999px;
-      --m3-shape-card: 28px;
-      --m3-shape-card-inner: 20px;
-      --m3-shape-input: 16px;
+      --pastel-purple: #ede3fe;
+      --pastel-purple-border: #d2bcfc;
+      --pastel-purple-accent: #a78bfa;
 
-      /* Component overrides for Material 3 Web */
-      --md-filled-button-container-shape: var(--m3-shape-pill);
-      --md-outlined-button-container-shape: var(--m3-shape-pill);
-      --md-outlined-text-field-container-shape: var(--m3-shape-input);
-      --md-assist-chip-container-shape: var(--m3-shape-pill);
-      --md-circular-progress-active-indicator-color: var(--md-sys-color-primary);
+      --pastel-teal: #dbf4ef;
+      --pastel-teal-border: #aee4d7;
+      --pastel-teal-accent: #2dd4bf;
+
+      /* Shapes & Shadows */
+      --radius-window: 24px;
+      --radius-card: 16px;
+      --radius-pill: 9999px;
+      --radius-sm: 8px;
+
+      --shadow-hard: 3px 3px 0px var(--border-dark);
+      --shadow-hard-sm: 2px 2px 0px var(--border-dark);
+      --shadow-hard-lg: 5px 5px 0px var(--border-dark);
     }
 
     * {
@@ -80,696 +72,976 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 0%, #152238 0%, #0a0e17 65%);
-      color: var(--md-sys-color-on-surface);
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-canvas);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(200, 225, 210, 0.45) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(220, 235, 225, 0.45) 0%, transparent 40%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      line-height: 1.6;
+      justify-content: center;
+      align-items: center;
+      padding: 32px 20px;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
 
-    .material-symbols-rounded {
-      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-    }
-
-    /* M3 Floating Top App Bar */
-    .top-app-bar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(10, 14, 23, 0.75);
-      border-bottom: 1px solid var(--md-sys-color-outline-variant);
-      padding: 14px 24px;
-    }
-
-    .top-bar-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .brand-icon-box {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #f5be38, #b48308);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #3f2e00;
-      font-weight: 800;
-      font-size: 20px;
-      box-shadow: 0 4px 20px rgba(245, 190, 56, 0.35);
-    }
-
-    .brand-text h1 {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .brand-text span {
-      font-size: 12px;
-      color: var(--md-sys-color-on-surface-variant);
-      font-weight: 600;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: var(--m3-shape-pill);
-      font-size: 12px;
-      font-weight: 700;
-      background: var(--md-sys-color-surface-container-high);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      color: var(--md-sys-color-on-surface);
-    }
-
-    .badge-pill.success {
-      background: rgba(110, 231, 183, 0.12);
-      border-color: rgba(110, 231, 183, 0.3);
-      color: var(--md-sys-color-tertiary);
-    }
-
-    .badge-pill.warning {
-      background: rgba(248, 113, 113, 0.15);
-      border-color: rgba(248, 113, 113, 0.4);
-      color: var(--md-sys-color-error);
-      cursor: pointer;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    /* Main Container */
-    .app-container {
-      max-width: 1200px;
+    /* Outer Application Window Frame */
+    .app-window {
       width: 100%;
-      margin: 32px auto;
-      padding: 0 24px;
-      flex-grow: 1;
-    }
-
-    /* M3 Expressive Grid */
-    .dashboard-grid {
+      max-width: 1240px;
+      background: var(--bg-surface);
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-window);
+      box-shadow: 0 16px 40px rgba(24, 28, 32, 0.08);
       display: grid;
-      grid-template-columns: 1fr 1.35fr;
-      gap: 28px;
-      align-items: start;
+      grid-template-columns: 240px 1fr;
+      min-height: 820px;
+      overflow: hidden;
     }
 
-    @media (max-width: 900px) {
-      .dashboard-grid {
+    @media (max-width: 960px) {
+      .app-window {
         grid-template-columns: 1fr;
       }
     }
 
-    /* M3 Expressive Card Container */
-    .m3-card {
-      background: var(--md-sys-color-surface-container);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--m3-shape-card);
-      padding: 28px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .m3-card:hover {
-      border-color: rgba(245, 190, 56, 0.3);
-    }
-
-    .m3-card.hero {
-      background: linear-gradient(145deg, #182338 0%, #101622 100%);
-      border: 1px solid rgba(245, 190, 56, 0.25);
-    }
-
-    .card-header {
+    /* ==========================================================================
+       SIDEBAR
+       ========================================================================== */
+    .sidebar {
+      background: #fafbf9;
+      border-right: 2px solid var(--border-dark);
+      padding: 28px 20px;
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      gap: 24px;
     }
 
-    .card-title {
+    @media (max-width: 960px) {
+      .sidebar {
+        border-right: none;
+        border-bottom: 2px solid var(--border-dark);
+        padding: 20px;
+      }
+    }
+
+    .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--md-sys-color-on-surface);
-    }
-
-    .card-title .material-symbols-rounded {
-      color: var(--md-sys-color-primary);
-    }
-
-    /* Balance Display (Expressive Big Numbers) */
-    .balance-display {
-      background: var(--md-sys-color-surface-container-high);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--m3-shape-card-inner);
-      padding: 22px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .balance-value {
-      font-size: 34px;
+      font-size: 22px;
       font-weight: 800;
-      color: var(--md-sys-color-primary);
       letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin: 4px 0;
-    }
-
-    .balance-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-      color: var(--md-sys-color-on-surface-variant);
-    }
-
-    /* Monospace Text & Chips */
-    .mono-address {
-      font-family: 'Roboto Mono', monospace;
-      font-size: 13px;
-      background: var(--md-sys-color-surface-dim);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      padding: 8px 12px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      word-break: break-all;
-    }
-
-    .mono-address a {
-      color: var(--md-sys-color-primary);
+      color: var(--border-dark);
       text-decoration: none;
     }
 
-    .copy-btn {
-      background: none;
-      border: none;
-      color: var(--md-sys-color-on-surface-variant);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      padding: 4px;
-      border-radius: 8px;
-      transition: color 0.15s, background 0.15s;
+    .brand-dot {
+      width: 14px;
+      height: 14px;
+      background: #f59e0b;
+      border: 2px solid var(--border-dark);
+      border-radius: 50%;
+      display: inline-block;
     }
 
-    .copy-btn:hover {
-      color: var(--md-sys-color-primary);
-      background: var(--md-sys-color-surface-container-highest);
+    .nav-group-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin: 18px 0 8px 6px;
     }
 
-    /* Form Layout */
-    .transfer-form {
+    .nav-list {
+      list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 4px;
     }
 
-    .field-label-row {
+    .nav-item a {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
-      font-size: 13px;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 14px;
       font-weight: 600;
+      transition: background 0.15s;
     }
 
-    .assist-chip-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-
-    .shortcut-btn {
-      background: var(--md-sys-color-surface-container-high);
-      border: 1px solid var(--md-sys-color-outline-variant);
-      color: var(--md-sys-color-primary);
-      font-size: 12px;
+    .nav-item.active a {
+      background: #f1f3ee;
+      color: var(--text-main);
       font-weight: 700;
-      padding: 5px 12px;
-      border-radius: var(--m3-shape-pill);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.15s ease;
-      font-family: inherit;
     }
 
-    .shortcut-btn:hover {
-      background: var(--md-sys-color-primary-container);
-      color: var(--md-sys-color-on-primary-container);
-      border-color: var(--md-sys-color-primary);
+    .nav-item a:hover {
+      background: #f1f3ee;
     }
 
-    /* Custom Text Field */
-    .m3-input {
-      width: 100%;
-      background: var(--md-sys-color-surface-dim);
-      border: 1.5px solid var(--md-sys-color-outline-variant);
-      border-radius: var(--m3-shape-input);
-      padding: 14px 16px;
-      color: var(--md-sys-color-on-surface);
-      font-family: inherit;
-      font-size: 15px;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+    .color-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: auto;
     }
 
-    .m3-input:focus {
-      border-color: var(--md-sys-color-primary);
-      box-shadow: 0 0 0 3px rgba(245, 190, 56, 0.2);
-    }
-
-    .m3-input.error {
-      border-color: var(--md-sys-color-error);
-    }
-
-    /* Action Button (Pill M3) */
-    .m3-btn-primary {
-      width: 100%;
-      background: linear-gradient(135deg, #f5be38, #d49a15);
-      color: #3f2e00;
-      border: none;
-      border-radius: var(--m3-shape-pill);
-      padding: 16px 28px;
-      font-size: 16px;
+    /* Sidebar Primary Action Button */
+    .btn-action-primary {
+      background: var(--pastel-yellow-btn);
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-hard);
+      padding: 12px 16px;
+      font-size: 14px;
       font-weight: 800;
+      color: var(--border-dark);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
+      transition: all 0.15s ease;
       font-family: inherit;
-      box-shadow: 0 4px 20px rgba(245, 190, 56, 0.3);
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      width: 100%;
+      text-decoration: none;
     }
 
-    .m3-btn-primary:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 26px rgba(245, 190, 56, 0.45);
+    .btn-action-primary:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 4px 4px 0px var(--border-dark);
     }
 
-    .m3-btn-primary:active:not(:disabled) {
-      transform: translateY(0);
+    .btn-action-primary:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px var(--border-dark);
     }
 
-    .m3-btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
+    .sidebar-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e8e3;
     }
 
-    /* Evidence Banner */
-    .evidence-box {
-      background: rgba(245, 190, 56, 0.06);
-      border: 1px solid rgba(245, 190, 56, 0.25);
-      border-radius: var(--m3-shape-card-inner);
-      padding: 18px 20px;
-      margin-top: 18px;
+    .sidebar-footer a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
     }
 
-    /* Activity Feed */
-    .tx-item {
+    .sidebar-footer a:hover {
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       MAIN CONTENT AREA
+       ========================================================================== */
+    .main-content {
+      padding: 28px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 600px) {
+      .main-content {
+        padding: 20px;
+      }
+    }
+
+    /* Top Navigation Tabs & Header */
+    .top-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      flex-wrap: wrap;
+      gap: 16px;
+      border-bottom: 2px solid #f1f3ee;
+      padding-bottom: 18px;
     }
 
-    .tx-item:last-child {
-      border-bottom: none;
+    .tab-nav {
+      display: flex;
+      gap: 24px;
     }
 
-    /* M3 Toast */
-    .m3-toast {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      background: var(--md-sys-color-surface-container-highest);
-      color: var(--md-sys-color-on-surface);
-      border: 1px solid var(--md-sys-color-outline);
-      border-radius: var(--m3-shape-pill);
-      padding: 14px 24px;
+    .tab-link {
       font-size: 14px;
       font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding-bottom: 4px;
+      position: relative;
+    }
+
+    .tab-link.active {
+      color: var(--text-main);
+      font-weight: 800;
+      border-bottom: 2px solid var(--border-dark);
+    }
+
+    .top-right-tools {
       display: flex;
       align-items: center;
+      gap: 14px;
+    }
+
+    .search-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fafbf9;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .search-pill input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--text-main);
+      width: 140px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px 4px 4px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: transform 0.15s;
+    }
+
+    .user-pill:hover {
+      background: #fafbf9;
+    }
+
+    .avatar-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f59e0b;
+      border: 1.5px solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    /* Dashboard Header Section */
+    .dashboard-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      transform: translateY(100px);
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-      z-index: 1000;
     }
 
-    .m3-toast.show {
-      transform: translateY(0);
-      opacity: 1;
-      pointer-events: auto;
+    .dashboard-title-row h2 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
 
-    .m3-toast a {
-      color: var(--md-sys-color-primary);
-      text-decoration: underline;
+    .network-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--pastel-green);
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+      font-size: 12px;
       font-weight: 700;
     }
 
-    /* Footer */
-    footer {
-      border-top: 1px solid var(--md-sys-color-outline-variant);
-      padding: 24px;
-      text-align: center;
-      color: var(--md-sys-color-on-surface-variant);
-      font-size: 13px;
-      margin-top: auto;
+    .network-badge.warning {
+      background: var(--pastel-pink);
+      color: #991b1b;
+      cursor: pointer;
     }
 
-    footer a {
-      color: var(--md-sys-color-primary);
+    /* ==========================================================================
+       THREE METRIC CARDS (IN PROGRESS / COMPLETED / OVERDUE STYLE)
+       ========================================================================== */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .metrics-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: var(--shadow-hard-sm);
+      transition: transform 0.15s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .metric-card.yellow {
+      background: var(--pastel-yellow);
+    }
+
+    .metric-card.green {
+      background: var(--pastel-green);
+    }
+
+    .metric-card.pink {
+      background: var(--pastel-pink);
+    }
+
+    .metric-top-icon {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .metric-number {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    /* ==========================================================================
+       TWO COLUMN MAIN GRID (LEFT: TRANSFER & CONTRACT, RIGHT: PROGRESS & ACTIVITIES)
+       ========================================================================== */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* White Panel Box with Dark Border */
+    .panel-box {
+      background: #ffffff;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-card);
+      padding: 22px;
+      box-shadow: var(--shadow-hard-sm);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .pill-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-pill);
+      box-shadow: 2px 2px 0px var(--border-dark);
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.1s;
+      font-family: inherit;
+    }
+
+    .pill-btn:hover {
+      background: #f8fafc;
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0px var(--border-dark);
+    }
+
+    .pill-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px var(--border-dark);
+    }
+
+    /* Form Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .form-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .neo-input {
+      width: 100%;
+      background: #fafbf9;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 11px 14px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .neo-input:focus {
+      background: #ffffff;
+      border-color: #000000;
+      box-shadow: 0 0 0 2px rgba(24, 28, 32, 0.1);
+    }
+
+    .neo-input.error {
+      border-color: #ef4444;
+      background: #fff5f5;
+    }
+
+    /* Sub-panels (Deadlines / Agenda Style) */
+    .mini-card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .mini-card-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mini-card {
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .mini-card.teal {
+      background: var(--pastel-teal);
+    }
+
+    .mini-card.purple {
+      background: var(--pastel-purple);
+    }
+
+    .mini-card.blue {
+      background: var(--pastel-blue);
+    }
+
+    .mini-card-title {
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .mini-card-sub {
+      font-size: 11px;
+      color: #334155;
+    }
+
+    /* Progress Ring Indicators (My Progress Style) */
+    .progress-rings-wrap {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0 18px;
+    }
+
+    .ring-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ring-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 5px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 800;
+      position: relative;
+    }
+
+    .ring-circle.yellow {
+      border-color: #facc15;
+      background: #fefce8;
+    }
+
+    .ring-circle.orange {
+      border-color: #fb923c;
+      background: #fff7ed;
+    }
+
+    .ring-circle.green {
+      border-color: #4ade80;
+      background: #f0fdf4;
+    }
+
+    .ring-caption {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Recent Activities Vertical Stack (Matching screenshot!) */
+    .activity-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .activity-pill-card {
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform 0.1s;
+    }
+
+    .activity-pill-card:hover {
+      transform: translateX(2px);
+    }
+
+    .activity-pill-card.teal {
+      background: #bce8e1;
+    }
+
+    .activity-pill-card.blue {
+      background: #8fbbf8;
+    }
+
+    .activity-pill-card.mint {
+      background: #b5e8dd;
+    }
+
+    .activity-pill-card.purple {
+      background: #c8a5ff;
+    }
+
+    .activity-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-dark);
+      background: #fcd34d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .activity-text {
+      flex-grow: 1;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .activity-time {
+      font-size: 11px;
+      color: #334155;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .feedback-banner.error {
+      background: var(--pastel-pink);
+      color: #991b1b;
+      display: block;
+    }
+
+    .feedback-banner.success {
+      background: var(--pastel-green);
+      color: #065f46;
+      display: block;
+    }
+
+    /* Notification Toast */
+    .toast-box {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #ffffff;
+      border: 2px solid var(--border-dark);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-hard);
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .toast-box.show {
+      transform: translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
-  <!-- Floating M3 Top Bar -->
-  <header class="top-app-bar">
-    <div class="top-bar-inner">
-      <a href="#" class="brand-wrap">
-        <div class="brand-icon-box">PG</div>
-        <div class="brand-text">
-          <h1>Progressive Gold 1</h1>
-          <span>Sepolia Testnet · Material 3 Expressive</span>
-        </div>
-      </a>
+  <!-- Outer Window Frame -->
+  <div class="app-window">
 
-      <div class="nav-actions">
-        <!-- Network Chip -->
-        <div id="networkPill" class="badge-pill" style="display: none;">
-          <span class="status-dot"></span>
-          <span id="networkText">Checking network...</span>
-        </div>
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <!-- Logo -->
+        <a href="#" class="brand">
+          <span class="brand-dot"></span>
+          <span>Proganize</span>
+        </a>
 
-        <!-- Wallet Connect Button / Chip -->
-        <button id="connectWalletBtn" class="shortcut-btn" style="padding: 8px 18px; font-size: 13px;">
-          <span class="material-symbols-rounded" style="font-size: 18px;">account_balance_wallet</span>
-          <span id="connectBtnText">Connect MetaMask</span>
+        <!-- Navigation Section -->
+        <div class="nav-group-title">Navigation</div>
+        <ul class="nav-list">
+          <li class="nav-item active"><a href="#">📊 Dashboard</a></li>
+          <li class="nav-item"><a href="#transfer-section">💸 Token Transfers</a></li>
+          <li class="nav-item"><a href="https://sepolia.etherscan.io/address/0x33Af3BB30Cf56C55BDDaDCfC9F40BB97f7F3a085" target="_blank">📜 Sepolia Contract</a></li>
+        </ul>
+
+        <div class="nav-group-title">Projects</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#">🎓 RTU BIS Lab <span class="color-dot" style="background: #34d399;"></span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#">🪙 PGOLD1 Token <span class="color-dot" style="background: #a855f7;"></span></a>
+          </li>
+          <li class="nav-item">
+            <a href="#">👨‍🏫 Lecturer Check <span class="color-dot" style="background: #3b82f6;"></span></a>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <!-- Primary Action Button (+ New Project style) -->
+        <button id="sidebarSendBtn" class="btn-action-primary" style="margin-bottom: 18px;">
+          <span>+ Transfer Tokens</span>
         </button>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+          <a href="https://sepolia.etherscan.io/" target="_blank">⚙️ Ethereum Sepolia</a>
+          <a href="https://github.com/ho1yspirt" target="_blank">❓ @ho1yspirt</a>
+        </div>
       </div>
-    </div>
-  </header>
+    </aside>
 
-  <!-- Main Content Container -->
-  <main class="app-container">
+    <!-- RIGHT MAIN CONTENT -->
+    <main class="main-content">
 
-    <!-- Wrong Network Alert -->
-    <div id="wrongNetworkBanner" class="m3-card" style="display: none; background: rgba(248, 113, 113, 0.12); border-color: rgba(248, 113, 113, 0.35); margin-bottom: 24px; padding: 20px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span class="material-symbols-rounded" style="color: var(--md-sys-color-error); font-size: 28px;">error</span>
-          <div>
-            <strong style="color: #fca5a5; display: block; font-size: 15px;">Wrong Network Detected</strong>
-            <span style="font-size: 13px; color: var(--md-sys-color-on-surface-variant);">Please switch MetaMask to <strong>Ethereum Sepolia (Chain ID 11155111)</strong> to use this dApp.</span>
+      <!-- Top Header / Tabs -->
+      <header class="top-header">
+        <nav class="tab-nav">
+          <a href="#" class="tab-link active">Dashboard</a>
+          <a href="https://sepolia.etherscan.io/token/0x33Af3BB30Cf56C55BDDaDCfC9F40BB97f7F3a085" target="_blank" class="tab-link">Token Details</a>
+          <a href="https://sepolia.etherscan.io/address/0x5f3046bD5aA3c6d4575AF09B8198d584f130708E" target="_blank" class="tab-link">Lecturer Wallet</a>
+          <a href="https://github.com/ho1yspirt/tokens" target="_blank" class="tab-link">Source Code</a>
+        </nav>
+
+        <div class="top-right-tools">
+          <div class="search-pill">
+            <span>🔍</span>
+            <input type="text" placeholder="Search address..." id="searchAddressInput" />
+          </div>
+
+          <!-- User / Wallet Pill -->
+          <div class="user-pill" id="walletPill">
+            <div class="avatar-circle" id="walletAvatar">P</div>
+            <span id="walletPillText">Connect Wallet</span>
+            <span>▼</span>
           </div>
         </div>
-        <button id="switchNetworkBtn" class="m3-btn-primary" style="width: auto; padding: 8px 20px; font-size: 13px; background: #ef4444; color: white;">
-          Switch to Sepolia
-        </button>
-      </div>
-    </div>
+      </header>
 
-    <div class="dashboard-grid">
-
-      <!-- LEFT COLUMN: Token Overview & Balances -->
-      <div style="display: flex; flex-direction: column; gap: 24px;">
-
-        <!-- Token Identity Card (Hero) -->
-        <div class="m3-card hero">
-          <div class="card-header">
-            <div class="card-title">
-              <span class="material-symbols-rounded">toll</span>
-              <span>Token Specification</span>
-            </div>
-            <span class="badge-pill success">Verified ERC-20</span>
-          </div>
-
-          <div style="margin-bottom: 16px;">
-            <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 700; text-transform: uppercase;">Token Name & Symbol</div>
-            <div style="font-size: 22px; font-weight: 800; color: var(--md-sys-color-on-surface);">Progressive Gold 1 <span style="color: var(--md-sys-color-primary);">(PGOLD1)</span></div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
-            <div style="background: var(--md-sys-color-surface-dim); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 16px; padding: 12px;">
-              <div style="font-size: 11px; color: var(--md-sys-color-on-surface-variant); font-weight: 700;">TOTAL SUPPLY</div>
-              <div style="font-size: 16px; font-weight: 800;" id="tokenTotalSupply">100,000 PGOLD1</div>
-            </div>
-            <div style="background: var(--md-sys-color-surface-dim); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 16px; padding: 12px;">
-              <div style="font-size: 11px; color: var(--md-sys-color-on-surface-variant); font-weight: 700;">DECIMALS</div>
-              <div style="font-size: 16px; font-weight: 800;">18</div>
-            </div>
-          </div>
-
-          <div>
-            <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 700; margin-bottom: 6px;">CONTRACT ADDRESS</div>
-            <div class="mono-address">
-              <span id="contractAddressDisplay">0x33Af3BB30Cf56C55BDDaDCfC9F40BB97f7F3a085</span>
-              <div style="display: flex; gap: 6px;">
-                <button class="copy-btn" id="copyContractBtn" title="Copy address">
-                  <span class="material-symbols-rounded" style="font-size: 18px;">content_copy</span>
-                </button>
-                <a href="https://sepolia.etherscan.io/address/0x33Af3BB30Cf56C55BDDaDCfC9F40BB97f7F3a085" target="_blank" class="copy-btn" title="View on Etherscan">
-                  <span class="material-symbols-rounded" style="font-size: 18px;">open_in_new</span>
-                </a>
-              </div>
-            </div>
+      <!-- Dashboard Title & Network Alert -->
+      <div class="dashboard-title-row">
+        <div>
+          <h2>Dashboard</h2>
+          <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
+            Progressive Gold 1 · Sepolia Contract: <code style="font-family: 'JetBrains Mono', monospace; background: #f1f3ee; padding: 2px 6px; border-radius: 4px;">0x33Af3BB...a085</code>
           </div>
         </div>
 
-        <!-- User Wallet Balances Card -->
-        <div class="m3-card">
-          <div class="card-header">
-            <div class="card-title">
-              <span class="material-symbols-rounded">account_balance</span>
-              <span>Your Balances</span>
-            </div>
-            <button class="copy-btn" id="refreshBalancesBtn" title="Refresh balances">
-              <span class="material-symbols-rounded">refresh</span>
-            </button>
-          </div>
-
-          <div id="unconnectedPrompt" style="text-align: center; padding: 24px 12px;">
-            <span class="material-symbols-rounded" style="font-size: 40px; color: var(--md-sys-color-on-surface-variant); margin-bottom: 8px;">wallet</span>
-            <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px; margin-bottom: 14px;">Connect MetaMask to view your live token and gas balances on Sepolia.</p>
-            <button class="shortcut-btn" id="promptConnectBtn" style="margin: 0 auto;">Connect Wallet</button>
-          </div>
-
-          <div id="balancesContainer" style="display: none;">
-            <!-- PGOLD1 Balance -->
-            <div class="balance-display">
-              <div>
-                <div class="balance-label">PGOLD1 Balance</div>
-                <div class="balance-value" id="userPgoldBalance">0.0000</div>
-                <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant);" id="userRawUnits">0 base units</div>
-              </div>
-              <span class="badge-pill success">PGOLD1</span>
-            </div>
-
-            <!-- SepoliaETH Gas Balance -->
-            <div class="balance-display" style="margin-bottom: 0;">
-              <div>
-                <div class="balance-label">SepoliaETH (Gas)</div>
-                <div class="balance-value" style="color: var(--md-sys-color-secondary); font-size: 24px;" id="userEthBalance">0.0000 ETH</div>
-              </div>
-              <span class="badge-pill">Gas Asset</span>
-            </div>
-          </div>
+        <div id="networkStatusBadge" class="network-badge">
+          <span>●</span>
+          <span id="networkBadgeText">Sepolia (11155111)</span>
         </div>
-
-        <!-- Professor Mandatory Evidence Card -->
-        <div class="m3-card" style="border: 1px solid rgba(245, 190, 56, 0.3); background: linear-gradient(135deg, #182338 0%, #0d131f 100%);">
-          <div class="card-header" style="margin-bottom: 12px;">
-            <div class="card-title">
-              <span class="material-symbols-rounded" style="color: var(--md-sys-color-primary);">verified</span>
-              <span>Professor Handoff Proof</span>
-            </div>
-            <span class="badge-pill success">Confirmed</span>
-          </div>
-
-          <p style="font-size: 13px; color: var(--md-sys-color-on-surface-variant); margin-bottom: 14px;">
-            Sent <strong>100 PGOLD1</strong> tokens to the lecturer's Sepolia destination wallet:
-          </p>
-
-          <div class="mono-address" style="margin-bottom: 14px; font-size: 12px;">
-            <span>0x5f3046bD5aA3c6d4575AF09B8198d584f130708E</span>
-            <button class="copy-btn" id="copyLecturerAddressBtn" title="Copy professor address">
-              <span class="material-symbols-rounded" style="font-size: 16px;">content_copy</span>
-            </button>
-          </div>
-
-          <a href="https://sepolia.etherscan.io/tx/0xa399c984fcc3ddae149f7191cbf3034ddfca4b76c8709cf2fbe9974ba5707f3c" target="_blank" class="shortcut-btn" style="width: 100%; justify-content: center; padding: 10px;">
-            <span class="material-symbols-rounded" style="font-size: 18px;">open_in_new</span>
-            <span>View Sepolia Etherscan Proof</span>
-          </a>
-        </div>
-
       </div>
 
-      <!-- RIGHT COLUMN: Safe Transfer Form & Activity -->
-      <div style="display: flex; flex-direction: column; gap: 24px;">
-
-        <!-- Safe Transfer Card -->
-        <div class="m3-card">
-          <div class="card-header">
-            <div class="card-title">
-              <span class="material-symbols-rounded">send</span>
-              <span>Send PGOLD1 Tokens</span>
-            </div>
-            <span class="badge-pill">On-Chain Transfer</span>
-          </div>
-
-          <form id="transferForm" class="transfer-form">
-            <!-- Recipient Input -->
-            <div>
-              <div class="field-label-row">
-                <span>Recipient Ethereum Address</span>
-                <span id="recipientValidationMsg" style="font-size: 12px; color: var(--md-sys-color-error);"></span>
-              </div>
-              <input type="text" id="recipientInput" class="m3-input" placeholder="0x..." autocomplete="off" />
-              <div class="assist-chip-row">
-                <button type="button" class="shortcut-btn" id="fillProfessorBtn">
-                  <span class="material-symbols-rounded" style="font-size: 16px;">school</span>
-                  <span>Fill Professor Address (0x5f30...708E)</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Amount Input -->
-            <div>
-              <div class="field-label-row">
-                <span>Amount to Transfer</span>
-                <span id="availableBalanceNote" style="font-size: 12px; color: var(--md-sys-color-on-surface-variant);">Available: 0.0000 PGOLD1</span>
-              </div>
-              <input type="number" step="any" id="amountInput" class="m3-input" placeholder="e.g. 1.0" />
-              <div class="assist-chip-row">
-                <button type="button" class="shortcut-btn" id="maxAmountBtn">
-                  <span class="material-symbols-rounded" style="font-size: 16px;">bolt</span>
-                  <span>MAX Balance</span>
-                </button>
-                <button type="button" class="shortcut-btn" id="fillOneTokenBtn">
-                  <span>1.0 Token</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Error message container -->
-            <div id="transferErrorBanner" style="display: none; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.4); border-radius: 12px; padding: 12px; color: #fca5a5; font-size: 13px;">
-            </div>
-
-            <!-- Transfer Submit Button -->
-            <button type="submit" id="submitTransferBtn" class="m3-btn-primary">
-              <span class="material-symbols-rounded" id="btnIcon">send</span>
-              <span id="btnText">Send PGOLD1</span>
-            </button>
-          </form>
+      <!-- THREE METRIC CARDS (Yellow / Green / Pink) -->
+      <section class="metrics-row">
+        <!-- Card 1: Total Supply (Yellow) -->
+        <div class="metric-card yellow">
+          <div class="metric-top-icon">🪙</div>
+          <div class="metric-number">100,000</div>
+          <div class="metric-label">Total Supply (PGOLD1)</div>
         </div>
 
-        <!-- Recent Activity Feed -->
-        <div class="m3-card">
-          <div class="card-header">
-            <div class="card-title">
-              <span class="material-symbols-rounded">history</span>
-              <span>Recent Transactions</span>
-            </div>
-            <span class="badge-pill">Sepolia Activity</span>
-          </div>
+        <!-- Card 2: User Balance (Green) -->
+        <div class="metric-card green">
+          <div class="metric-top-icon">✅</div>
+          <div class="metric-number" id="cardPgoldBalance">0.00</div>
+          <div class="metric-label">Your PGOLD1 Balance</div>
+        </div>
 
-          <div id="txList">
-            <!-- Initial confirmed proof tx -->
-            <div class="tx-item">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <span class="material-symbols-rounded" style="color: var(--md-sys-color-tertiary); font-size: 24px;">check_circle</span>
-                <div>
-                  <div style="font-size: 14px; font-weight: 700;">Lecturer Mandatory Transfer</div>
-                  <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-family: 'Roboto Mono', monospace;">To: 0x5f3046bD...708E</div>
+        <!-- Card 3: Gas ETH (Pink) -->
+        <div class="metric-card pink">
+          <div class="metric-top-icon">⛽</div>
+          <div class="metric-number" id="cardEthBalance">0.000</div>
+          <div class="metric-label">Sepolia Gas (ETH)</div>
+        </div>
+      </section>
+
+      <!-- TWO-COLUMN CONTENT GRID -->
+      <section class="content-grid">
+
+        <!-- LEFT COLUMN: Transfer Panel & Lecturer Proof -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+          <!-- Transfer Card -->
+          <div class="panel-box" id="transfer-section">
+            <div class="panel-header">
+              <span class="panel-title">Send PGOLD1 Tokens</span>
+              <button class="pill-btn" id="refreshBalancesBtn">
+                <span>🔄 Refresh</span>
+              </button>
+            </div>
+
+            <form id="transferForm">
+              <!-- Recipient -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <span>Recipient Address</span>
+                  <button type="button" class="pill-btn" id="shortcutProfBtn" style="padding: 2px 8px; font-size: 11px;">
+                    Fill Lecturer (0x5f30...708E)
+                  </button>
                 </div>
+                <input type="text" id="recipientInput" class="neo-input" placeholder="0x..." />
               </div>
-              <div style="text-align: right;">
-                <div style="font-size: 14px; font-weight: 800; color: var(--md-sys-color-primary);">-100.0 PGOLD1</div>
-                <a href="https://sepolia.etherscan.io/tx/0xa399c984fcc3ddae149f7191cbf3034ddfca4b76c8709cf2fbe9974ba5707f3c" target="_blank" style="font-size: 11px; color: var(--md-sys-color-secondary); text-decoration: none;">
-                  Etherscan ↗
-                </a>
+
+              <!-- Amount -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <span>Amount (PGOLD1)</span>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" class="pill-btn" id="shortcutOneBtn" style="padding: 2px 8px; font-size: 11px;">1.0</button>
+                    <button type="button" class="pill-btn" id="shortcutMaxBtn" style="padding: 2px 8px; font-size: 11px;">MAX</button>
+                  </div>
+                </div>
+                <input type="number" step="any" id="amountInput" class="neo-input" placeholder="e.g. 1.0" />
+              </div>
+
+              <!-- Feedback message -->
+              <div id="transferFeedback" class="feedback-banner"></div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="submitTransferBtn" class="btn-action-primary" style="margin-top: 8px;">
+                <span id="submitBtnText">Confirm & Send Transfer</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Mandatory Lecturer Proof Panel (Deadlines/Agenda pastel box style) -->
+          <div class="panel-box">
+            <div class="panel-header">
+              <span class="panel-title">Lecturer Assignment Check</span>
+              <a href="https://sepolia.etherscan.io/tx/0xa399c984fcc3ddae149f7191cbf3034ddfca4b76c8709cf2fbe9974ba5707f3c" target="_blank" class="pill-btn">
+                View On-Chain Proof ↗
+              </a>
+            </div>
+
+            <div class="mini-card-row">
+              <div class="mini-card teal">
+                <div class="mini-card-title">100 PGOLD1 Transferred</div>
+                <div class="mini-card-sub">To: 0x5f3046bD...708E</div>
+                <div style="font-size: 10px; font-weight: 700; color: #0f766e; margin-top: 4px;">Status: Confirmed on Sepolia</div>
+              </div>
+
+              <div class="mini-card purple">
+                <div class="mini-card-title">ERC20Permit Ready</div>
+                <div class="mini-card-sub">OpenZeppelin ^5.7.0</div>
+                <div style="font-size: 10px; font-weight: 700; color: #6b21a8; margin-top: 4px;">Upgraded & Verified</div>
               </div>
             </div>
           </div>
+
         </div>
 
-      </div>
+        <!-- RIGHT COLUMN: Progress Gauges & Recent Activities -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
 
-    </div>
+          <!-- Progress Gauges (My Progress Card) -->
+          <div class="panel-box">
+            <div class="panel-header">
+              <span class="panel-title">Token Distribution</span>
+              <span class="pill-btn" style="cursor: default;">Live Metrics</span>
+            </div>
 
-  </main>
+            <div class="progress-rings-wrap">
+              <div class="ring-item">
+                <div class="ring-circle yellow" id="ringUserPct">99%</div>
+                <div class="ring-caption">Your Share</div>
+              </div>
 
-  <!-- M3 Expressive Toast -->
-  <div id="toast" class="m3-toast">
-    <span class="material-symbols-rounded" id="toastIcon">info</span>
+              <div class="ring-item">
+                <div class="ring-circle green">100%</div>
+                <div class="ring-caption">Total Supply</div>
+              </div>
+
+              <div class="ring-item">
+                <div class="ring-circle orange">0.1%</div>
+                <div class="ring-caption">Lecturer (100)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activities (Matching exact screenshot stack!) -->
+          <div class="panel-box">
+            <div class="panel-header">
+              <span class="panel-title">Recent Activities</span>
+              <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Sepolia Log</span>
+            </div>
+
+            <div class="activity-stack" id="activityStack">
+              <!-- Item 1: Lecturer Transfer (Teal) -->
+              <div class="activity-pill-card teal">
+                <div class="activity-avatar" style="background: #34d399;">🎓</div>
+                <div class="activity-text">
+                  <strong>Lecturer Transfer:</strong> Sent 100 PGOLD1 to Professor
+                  <div style="font-size: 11px; opacity: 0.8;">0x5f3046bD...708E</div>
+                </div>
+                <div class="activity-time">Confirmed</div>
+              </div>
+
+              <!-- Item 2: Upgraded Contract (Blue) -->
+              <div class="activity-pill-card blue">
+                <div class="activity-avatar" style="background: #60a5fa;">⚡</div>
+                <div class="activity-text">
+                  <strong>OpenZeppelin 5.7.0:</strong> Upgraded with ERC20Permit
+                  <div style="font-size: 11px; opacity: 0.8;">Compiled in Remix</div>
+                </div>
+                <div class="activity-time">Active</div>
+              </div>
+
+              <!-- Item 3: Initial Deployment (Mint) -->
+              <div class="activity-pill-card mint">
+                <div class="activity-avatar" style="background: #a7f3d0;">🪙</div>
+                <div class="activity-text">
+                  <strong>Mint Supply:</strong> 100,000 PGOLD1 deployed
+                  <div style="font-size: 11px; opacity: 0.8;">Sepolia chain ID 11155111</div>
+                </div>
+                <div class="activity-time">Initial</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-box">
+    <span id="toastIcon">ℹ️</span>
     <span id="toastMsg">Notification message</span>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-      <div>Progressive Gold 1 (PGOLD1) · Ethereum Sepolia (Chain ID 11155111)</div>
-      <div>GitHub: <a href="https://github.com/ho1yspirt" target="_blank">@ho1yspirt</a></div>
-    </div>
-  </footer>
-
-  <!-- Main JavaScript App Logic -->
+  <!-- Main JavaScript Logic -->
   <script src="app.js"></script>
 </body>
 </html>
